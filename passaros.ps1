@@ -1,4 +1,4 @@
-#requires -version 5.1
+﻿#requires -version 5.1
 
 $script:CONFIG_PATH = Join-Path $PSScriptRoot "data\config.json"
 $script:AUDIOS_DIR = Join-Path $PSScriptRoot "audios"
@@ -142,7 +142,8 @@ function ToggleSistema {
   $script:config.ativo = !$script:config.ativo
   if (!$script:config.ativo) { PararReproducao }
   SalvarConfig
-  Write-Host $("Sistema " + $(if ($script:config.ativo) { "ativado" } else { "desativado" })) -ForegroundColor Green
+  $status = if ($script:config.ativo) { "ativado" } else { "desativado" }
+  Write-Host "Sistema $status" -ForegroundColor Green
   Start-Sleep 1
 }
 
