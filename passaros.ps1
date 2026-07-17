@@ -5,7 +5,6 @@ $script:AUDIOS_DIR = Join-Path $PSScriptRoot "audios"
 $script:config = @{ horarios = @(); ativo = $false }
 $script:tocando = $null
 $script:processo = $null
-$script:wm = $null
 
 if (!(Test-Path $AUDIOS_DIR)) { New-Item -ItemType Directory -Path $AUDIOS_DIR -Force | Out-Null }
 if (!(Test-Path (Split-Path $CONFIG_PATH -Parent))) { New-Item -ItemType Directory -Path (Split-Path $CONFIG_PATH -Parent) -Force | Out-Null }
@@ -170,9 +169,7 @@ function TestarArquivo {
       Start-Sleep 10
       $player.Stop()
     } else {
-      $script:wm = New-Object -ComObject WMPlayer.OCX
-      $script:wm.URL = $caminho
-      $script:wm.controls.play()
+      $script:processo = Start-Process -WindowStyle Minimized -FilePath "wmplayer.exe" -ArgumentList "`"$caminho`"" -PassThru
       Start-Sleep 10
       PararReproducao
     }
@@ -206,11 +203,6 @@ function PararReproducao {
     try { $script:processo.Kill() } catch {}
     $script:processo = $null
   }
-  if ($script:wm) {
-    try { $script:wm.controls.stop() } catch {}
-    try { [System.Runtime.InteropServices.Marshal]::ReleaseComObject($script:wm) | Out-Null } catch {}
-    $script:wm = $null
-  }
   try { Get-Process | Where-Object { $_.ProcessName -eq 'wmplayer' } | Stop-Process -Force } catch {}
   try { [System.Media.SoundPlayer]::new().Stop() } catch {}
   $script:tocando = $null
@@ -225,10 +217,7 @@ function TocarArquivoLoop($arquivo) {
   if ($ext -eq '.wav') {
     $script:processo = Start-Process -WindowStyle Hidden -FilePath "powershell" -ArgumentList "-ExecutionPolicy Bypass -Command `$player = New-Object System.Media.SoundPlayer('$caminho'); `$player.PlayLoop(); Start-Sleep 99999" -PassThru
   } else {
-    $script:wm = New-Object -ComObject WMPlayer.OCX
-    $script:wm.URL = $caminho
-    $script:wm.settings.setMode('loop', $true)
-    $script:wm.controls.play()
+    $script:processo = Start-Process -WindowStyle Minimized -FilePath "wmplayer.exe" -ArgumentList "`"$caminho`"" -PassThru
   }
   $script:tocando = $arquivo
 }
@@ -252,9 +241,15 @@ function VerificarAgenda {
       }
     }
     
-    if ($deveTocar -and $deveTocar -ne $script:tocando) {
-      Write-Host "$(Get-Date -Format 'HH:mm:ss') 🔊 Iniciando: $deveTocar" -ForegroundColor Cyan
-      TocarArquivoLoop $deveTocar
+    if ($deveTocar) {
+      $reiniciar = $deveTocar -ne $script:tocando
+      if (-not $reiniciar -and $script:processo) {
+        $reiniciar = $script:processo.HasExited
+      }
+      if ($reiniciar) {
+        Write-Host "$(Get-Date -Format 'HH:mm:ss') 🔊 Iniciando: $deveTocar" -ForegroundColor Cyan
+        TocarArquivoLoop $deveTocar
+      }
     } elseif (!$deveTocar -and $script:tocando) {
       Write-Host "$(Get-Date -Format 'HH:mm:ss') ⏹️  Parando: $($script:tocando)" -ForegroundColor Yellow
       PararReproducao
