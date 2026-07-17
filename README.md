@@ -1,26 +1,31 @@
-# Minerador Veil (VEIL) — RandomX
+# 🐦 Encantador de Pássaros
 
-## ✅ Como minerar
+Reproduz áudios e vídeos agendados para atrair pássaros.
 
-**Opção 1 — Duplo clique:**
-Abra a pasta `C:\projeto pedido delivery` e dê dois cliques em **`minar_direto.bat`**
+## ✅ Como usar
 
-**Opção 2 — PowerShell:**
-```powershell
-C:\projeto pedido delivery\minar.ps1
+1. Coloque seus arquivos (MP3, WAV, MP4, AVI...) na pasta `audios/`
+2. Dê dois cliques em **`passaros.bat`** (ou execute `passaros.ps1` no PowerShell)
+3. Use o menu para adicionar horários e ativar o sistema
+
+## 📁 Estrutura
+
+```
+C:\projeto pedido delivery\
+├── passaros.ps1      → Script principal (menu interativo)
+├── passaros.bat      → Atalho para executar
+├── audios\           → Coloque seus arquivos aqui
+│   └── .gitkeep
+├── data\             → Configuração salva automaticamente
+│   └── config.json
+└── README.md
 ```
 
-**Opção 3 — Prompt de comando:**
-```cmd
-C:\projeto pedido delivery\minar_direto.bat
-```
+## ⏰ Como configurar horários
 
-## 🔧 Comando manual
+Pelo menu:
+- **2** → Adicionar horário (início, fim, arquivo, dias)
+- **0** → Iniciar monitoramento (fica verificando a cada 30s)
+- **4** → Liga/Desliga o sistema
 
-```cmd
-C:\projeto pedido delivery\xmrig-veil-bin\xmrig.exe -o fastpool.xyz:10282 -u sv1qqpf3v275snmfp29eezf5r0q4dprqzu7axydv8k7lpp6n5fy6lu9hggpqwfmtxum92s9acvy66dpwt7fxvk28ccd6ahwzx0zpnt65v27fjy7qqqqykqcpw -p x --algo rx/veil --worker-name rig1
-```
-
-## 🌐 Acompanhar
-
-https://fastpool.xyz/veil-rx/
+O arquivo toca em loop contínuo do início até o fim do horário.

@@ -1,0 +1,20 @@
+# Old mining files
+minar.bat
+minar.ps1
+minar_direto.bat
+miner.ps1
+xmrig-veil-bin/
+
+# Old web server (unused)
+node_modules/
+public/
+server.js
+agendador.js
+package.json
+package-lock.json
+
+# Audio scheduler data (user-generated)
+audios/*
+!audios/.gitkeep
+data/*
+!data/.gitkeep
