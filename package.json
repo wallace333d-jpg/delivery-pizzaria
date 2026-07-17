@@ -1,0 +1,11 @@
+{
+  "name": "veil-rx-miner",
+  "version": "1.0.0",
+  "description": "Minerador Veil (VEIL) RandomX para FastPool.xyz",
+  "main": "miner.js",
+  "scripts": {
+    "start": "node miner.js",
+    "build-xmrig": "node setup.js"
+  },
+  "dependencies": {}
+}
