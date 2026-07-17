@@ -59,6 +59,7 @@ function MostrarMenu {
   Write-Host "  4 - Ligar / Desligar sistema" -ForegroundColor White
   Write-Host "  5 - Testar arquivo" -ForegroundColor White
   Write-Host "  6 - Parar reprodução agora" -ForegroundColor White
+  Write-Host "  7 - Tocar canto agora (loop até parar)" -ForegroundColor White
   Write-Host "  0 - Iniciar monitoramento (modo agendado)" -ForegroundColor Green
   Write-Host "  S - Sair" -ForegroundColor Red
   Write-Host "══════════════════════════════════════════" -ForegroundColor Cyan
@@ -180,6 +181,26 @@ function TestarArquivo {
   pause
 }
 
+function TocarCantoAgora {
+  Clear-Host
+  $arquivos = ListarArquivos
+  if ($arquivos.Count -eq 0) { Write-Host "Nenhum arquivo." -ForegroundColor Red; pause; return }
+  Write-Host "🎵 TOCAR CANTO AGORA" -ForegroundColor Yellow
+  Write-Host ""
+  $i = 1; $arquivos | ForEach-Object { Write-Host "  [$i] $_"; $i++ }
+  $sel = Read-Host "`nNúmero do arquivo (Enter para cancelar)"
+  if (!$sel) { return }
+  $idx = [int]$sel - 1
+  if ($idx -ge 0 -and $idx -lt $arquivos.Count) {
+    TocarArquivoLoop $arquivos[$idx]
+    Write-Host ""
+    Write-Host "▶️  Tocando: $($arquivos[$idx]) em loop" -ForegroundColor Cyan
+    Write-Host "Pressione qualquer tecla para parar." -ForegroundColor Yellow
+    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
+    PararReproducao
+  }
+}
+
 function PararReproducao {
   if ($script:processo -and !$script:processo.HasExited) {
     try { $script:processo.Kill() } catch {}
@@ -271,6 +292,7 @@ while ($true) {
     '4' { ToggleSistema }
     '5' { TestarArquivo }
     '6' { PararReproducao; Write-Host "⏹️  Parado"; Start-Sleep 1 }
+    '7' { TocarCantoAgora }
     '0' { 
       Clear-Host
       Write-Host "🚀 INICIANDO MONITORAMENTO..." -ForegroundColor Green
